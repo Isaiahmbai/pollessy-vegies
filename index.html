@@ -5,21 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pollessy Vegies & Fruits</title>
 <style>
-body { font-family: Arial; margin:0; background:#f4f6f5; }
+body { font-family: Arial; margin:0; background:#eef2f1; }
 header { background:#2e7d32; color:white; padding:15px; text-align:center; }
 nav { display:flex; justify-content:space-between; padding:10px; background:#1b5e20; color:white; }
 .container { padding:20px; }
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; }
-.card { background:white; padding:10px; border-radius:10px; }
+.card { background:white; padding:10px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
 img { width:100%; height:150px; object-fit:cover; border-radius:8px; }
 input, textarea { width:100%; margin:5px 0; padding:8px; }
-button { padding:8px; background:#2e7d32; color:white; border:none; cursor:pointer; }
+button { padding:8px; background:#2e7d32; color:white; border:none; cursor:pointer; border-radius:5px; }
+.logo { font-size:22px; font-weight:bold; }
+.login-box { max-width:300px; margin:auto; background:white; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
 </style>
 </head>
 <body>
 
 <header>
-<h1>Pollessy Vegies & Fruits</h1>
+<div class="logo">🌿 Pollessy Vegies & Fruits</div>
 <p>Fresh from farm to your table</p>
 </header>
 
@@ -30,21 +32,13 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 
 <div class="container">
 
-<!-- USER AUTH -->
-<div id="auth">
+<!-- SINGLE LOGIN -->
+<div id="auth" class="login-box">
 <h2>Login / Register</h2>
-<input id="username" placeholder="Username">
+<input id="username" placeholder="Email">
 <input id="password" type="password" placeholder="Password">
 <button onclick="register()">Register</button>
 <button onclick="login()">Login</button>
-</div>
-
-<!-- ADMIN LOGIN -->
-<div id="adminLogin">
-<h2>Admin Login</h2>
-<input id="adminUser" placeholder="Admin Username">
-<input id="adminPass" type="password" placeholder="Password">
-<button onclick="adminLogin()">Login as Admin</button>
 </div>
 
 <!-- ADMIN PANEL -->
@@ -60,6 +54,10 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 
 <h3>Orders</h3>
 <div id="orders"></div>
+
+<h3>Add Admin</h3>
+<input id="newAdmin" placeholder="Admin Email">
+<button onclick="addAdmin()">Add Admin</button>
 </div>
 
 <h2>Products</h2>
@@ -72,17 +70,15 @@ let products = JSON.parse(localStorage.getItem('products')) || [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let users = JSON.parse(localStorage.getItem('users')) || [];
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
+let admins = JSON.parse(localStorage.getItem('admins')) || ["mbaiisaiah@gmail.com"];
 let currentUser = localStorage.getItem('currentUser');
-
-// ADMIN credentials (change these!)
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "1234";
 
 function save(){
 localStorage.setItem('products', JSON.stringify(products));
 localStorage.setItem('cart', JSON.stringify(cart));
 localStorage.setItem('users', JSON.stringify(users));
 localStorage.setItem('orders', JSON.stringify(orders));
+localStorage.setItem('admins', JSON.stringify(admins));
 localStorage.setItem('currentUser', currentUser);
 }
 
@@ -91,6 +87,10 @@ let status=document.getElementById('userStatus');
 if(currentUser){
 status.innerHTML='Logged in: '+currentUser+' <button onclick="logout()">Logout</button>';
 document.getElementById('auth').style.display='none';
+if(admins.includes(currentUser)){
+document.getElementById('adminPanel').style.display='block';
+loadOrders();
+}
 }else{
 status.innerHTML='Not logged in';
 document.getElementById('auth').style.display='block';
@@ -114,17 +114,14 @@ if(user){ currentUser=u; save(); updateUserUI(); }
 else alert('invalid');
 }
 
-function logout(){ currentUser=null; save(); updateUserUI(); }
+function logout(){ currentUser=null; save(); location.reload(); }
 
-function adminLogin(){
-let u=document.getElementById('adminUser').value;
-let p=document.getElementById('adminPass').value;
-if(u===ADMIN_USER && p===ADMIN_PASS){
-document.getElementById('adminPanel').style.display='block';
-document.getElementById('adminLogin').style.display='none';
-loadOrders();
-}else{
-alert('Wrong admin credentials');
+function addAdmin(){
+let email=document.getElementById('newAdmin').value;
+if(email && !admins.includes(email)){
+admins.push(email);
+save();
+alert('Admin added');
 }
 }
 
@@ -169,17 +166,13 @@ Location: ${o.location}<br>
 Date: ${o.date}<br>
 Items:<br>
 ${o.items.map(x=>x.name+' - '+x.price).join('<br>')}<br>
-<button onclick="clearOrder(${i})">Mark Done</button>
+<button onclick="clearOrder(${i})">Done</button>
 `;
 oDiv.appendChild(d);
 });
 }
 
-function clearOrder(i){
-orders.splice(i,1);
-save();
-loadOrders();
-}
+function clearOrder(i){ orders.splice(i,1); save(); loadOrders(); }
 
 function display(){
 let c=document.getElementById('products');
@@ -214,4 +207,3 @@ document.body.appendChild(btn);
 
 </body>
 </html>
-
