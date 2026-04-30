@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pollessy Vegies & Fruits</title>
+<style>
+body { font-family: Arial; margin:0; background:#f4f6f5; }
+header { background:#2e7d32; color:white; padding:15px; text-align:center; }
+nav { display:flex; justify-content:space-between; padding:10px; background:#1b5e20; color:white; }
+.container { padding:20px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; }
+.card { background:white; padding:10px; border-radius:10px; }
+img { width:100%; height:150px; object-fit:cover; border-radius:8px; }
+input, textarea { width:100%; margin:5px 0; padding:8px; }
+button { padding:8px; background:#2e7d32; color:white; border:none; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<header>
+<h1>Pollessy Vegies & Fruits</h1>
+<p>Fresh from farm to your table</p>
+</header>
+
+<nav>
+<div>Cart: <span id="cartCount">0</span></div>
+<button onclick="toggleAdmin()">Admin</button>
+</nav>
+
+<div class="container">
+
+<div id="adminPanel" style="display:none;">
+<h2>Add Product</h2>
+<input id="name" placeholder="Name">
+<input id="price" type="number" placeholder="Price">
+<input id="image" placeholder="Image URL">
+<textarea id="desc" placeholder="Description"></textarea>
+<button onclick="addProduct()">Add</button>
+</div>
+
+<h2>Products</h2>
+<div id="products" class="grid"></div>
+
+</div>
+
+<script>
+let products = JSON.parse(localStorage.getItem('products')) || [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+function save(){
+localStorage.setItem('products', JSON.stringify(products));
+localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function toggleAdmin(){
+let p=document.getElementById('adminPanel');
+p.style.display=p.style.display==='none'?'block':'none';
+}
+
+function addProduct(){
+let name=document.getElementById('name').value;
+let price=document.getElementById('price').value;
+let image=document.getElementById('image').value;
+let desc=document.getElementById('desc').value;
+if(!name||!price)return alert('fill required');
+products.push({name,price,image,desc});
+save();
+display();
+}
+
+function addToCart(i){
+cart.push(products[i]);
+save();
+updateCart();
+}
+
+function updateCart(){
+document.getElementById('cartCount').innerText=cart.length;
+}
+
+function orderWhatsApp(){
+let msg='Hello, I want to order:%0A';
+cart.forEach(p=>{msg+=p.name+' - KES '+p.price+'%0A'});
+window.open('https://wa.me/254792636137?text='+msg);
+}
+
+function display(){
+let c=document.getElementById('products');
+c.innerHTML='';
+products.forEach((p,i)=>{
+let d=document.createElement('div');
+d.className='card';
+d.innerHTML=`
+<img src="${p.image||'https://via.placeholder.com/200'}">
+<h3>${p.name}</h3>
+<p>${p.desc||''}</p>
+<b>KES ${p.price}</b><br>
+<button onclick="addToCart(${i})">Add to Cart</button>
+`;
+c.appendChild(d);
+});
+}
+
+updateCart();
+display();
+
+// simple floating order button
+let btn=document.createElement('button');
+btn.innerText='Order via WhatsApp';
+btn.style.position='fixed';
+btn.style.bottom='20px';
+btn.style.right='20px';
+btn.onclick=orderWhatsApp;
+document.body.appendChild(btn);
+
+</script>
+
+</body>
+</html>
