@@ -26,12 +26,11 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 <nav>
 <div>Cart: <span id="cartCount">0</span></div>
 <div id="userStatus"></div>
-<button onclick="toggleAdmin()">Admin</button>
 </nav>
 
 <div class="container">
 
-<!-- LOGIN -->
+<!-- USER AUTH -->
 <div id="auth">
 <h2>Login / Register</h2>
 <input id="username" placeholder="Username">
@@ -40,13 +39,27 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 <button onclick="login()">Login</button>
 </div>
 
+<!-- ADMIN LOGIN -->
+<div id="adminLogin">
+<h2>Admin Login</h2>
+<input id="adminUser" placeholder="Admin Username">
+<input id="adminPass" type="password" placeholder="Password">
+<button onclick="adminLogin()">Login as Admin</button>
+</div>
+
+<!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none;">
-<h2>Add Product</h2>
+<h2>Admin Dashboard</h2>
+
+<h3>Add Product</h3>
 <input id="name" placeholder="Name">
 <input id="price" type="number" placeholder="Price">
 <input id="image" placeholder="Image URL">
 <textarea id="desc" placeholder="Description"></textarea>
-<button onclick="addProduct()">Add</button>
+<button onclick="addProduct()">Add Product</button>
+
+<h3>Orders</h3>
+<div id="orders"></div>
 </div>
 
 <h2>Products</h2>
@@ -58,12 +71,18 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 let products = JSON.parse(localStorage.getItem('products')) || [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let users = JSON.parse(localStorage.getItem('users')) || [];
+let orders = JSON.parse(localStorage.getItem('orders')) || [];
 let currentUser = localStorage.getItem('currentUser');
+
+// ADMIN credentials (change these!)
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "1234";
 
 function save(){
 localStorage.setItem('products', JSON.stringify(products));
 localStorage.setItem('cart', JSON.stringify(cart));
 localStorage.setItem('users', JSON.stringify(users));
+localStorage.setItem('orders', JSON.stringify(orders));
 localStorage.setItem('currentUser', currentUser);
 }
 
@@ -97,9 +116,16 @@ else alert('invalid');
 
 function logout(){ currentUser=null; save(); updateUserUI(); }
 
-function toggleAdmin(){
-let p=document.getElementById('adminPanel');
-p.style.display=p.style.display==='none'?'block':'none';
+function adminLogin(){
+let u=document.getElementById('adminUser').value;
+let p=document.getElementById('adminPass').value;
+if(u===ADMIN_USER && p===ADMIN_PASS){
+document.getElementById('adminPanel').style.display='block';
+document.getElementById('adminLogin').style.display='none';
+loadOrders();
+}else{
+alert('Wrong admin credentials');
+}
 }
 
 function addProduct(){
@@ -124,12 +150,35 @@ function updateCart(){ document.getElementById('cartCount').innerText=cart.lengt
 function placeOrder(){
 if(!currentUser) return alert('Login first');
 let location=prompt('Enter delivery location');
-let order={user:currentUser, items:cart, location, date:new Date()};
-let orders=JSON.parse(localStorage.getItem('orders'))||[];
+let order={user:currentUser, items:cart, location, date:new Date().toLocaleString()};
 orders.push(order);
-localStorage.setItem('orders', JSON.stringify(orders));
-alert('Order sent');
+save();
+alert('Order placed');
 cart=[]; save(); updateCart();
+}
+
+function loadOrders(){
+let oDiv=document.getElementById('orders');
+oDiv.innerHTML='';
+orders.forEach((o,i)=>{
+let d=document.createElement('div');
+d.className='card';
+d.innerHTML=`
+<b>${o.user}</b><br>
+Location: ${o.location}<br>
+Date: ${o.date}<br>
+Items:<br>
+${o.items.map(x=>x.name+' - '+x.price).join('<br>')}<br>
+<button onclick="clearOrder(${i})">Mark Done</button>
+`;
+oDiv.appendChild(d);
+});
+}
+
+function clearOrder(i){
+orders.splice(i,1);
+save();
+loadOrders();
 }
 
 function display(){
