@@ -14,14 +14,14 @@ nav { display:flex; justify-content:space-between; padding:10px; background:#1b5
 img { width:100%; height:150px; object-fit:cover; border-radius:8px; }
 input, textarea { width:100%; margin:5px 0; padding:8px; }
 button { padding:8px; background:#2e7d32; color:white; border:none; cursor:pointer; border-radius:5px; }
-.logo { font-size:22px; font-weight:bold; }
-.login-box { max-width:300px; margin:auto; background:white; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+.login-box { max-width:320px; margin:auto; background:white; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+.section-title { margin-top:25px; }
 </style>
 </head>
 <body>
 
 <header>
-<div class="logo">🌿 Pollessy Vegies & Fruits</div>
+<h1>🌿 Pollessy Vegies & Fruits</h1>
 <p>Fresh from farm to your table</p>
 </header>
 
@@ -32,7 +32,7 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 
 <div class="container">
 
-<!-- SINGLE LOGIN -->
+<!-- AUTH -->
 <div id="auth" class="login-box">
 <h2>Login / Register</h2>
 <input id="username" placeholder="Email">
@@ -48,20 +48,23 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 <h3>Add Product</h3>
 <input id="name" placeholder="Name">
 <input id="price" type="number" placeholder="Price">
-<input id="image" placeholder="Image URL">
+<input type="file" id="imageFile" accept="image/*">
 <textarea id="desc" placeholder="Description"></textarea>
 <button onclick="addProduct()">Add Product</button>
 
 <h3>Orders</h3>
 <div id="orders"></div>
 
-<h3>Add Admin</h3>
+<h3>Add Admin Email</h3>
 <input id="newAdmin" placeholder="Admin Email">
 <button onclick="addAdmin()">Add Admin</button>
 </div>
 
-<h2>Products</h2>
+<h2 class="section-title">Products</h2>
 <div id="products" class="grid"></div>
+
+<h2 class="section-title">Recommended for You</h2>
+<div id="recommendations" class="grid"></div>
 
 </div>
 
@@ -71,7 +74,9 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let users = JSON.parse(localStorage.getItem('users')) || [];
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
 let admins = JSON.parse(localStorage.getItem('admins')) || ["mbaiisaiah@gmail.com"];
+
 let currentUser = localStorage.getItem('currentUser');
+if(currentUser === "null") currentUser = null;
 
 function save(){
 localStorage.setItem('products', JSON.stringify(products));
@@ -84,16 +89,20 @@ localStorage.setItem('currentUser', currentUser);
 
 function updateUserUI(){
 let status=document.getElementById('userStatus');
+
 if(currentUser){
-status.innerHTML='Logged in: '+currentUser+' <button onclick="logout()">Logout</button>';
+status.innerHTML = `Logged in: ${currentUser} <button onclick="logout()">Logout</button>`;
 document.getElementById('auth').style.display='none';
+
 if(admins.includes(currentUser)){
 document.getElementById('adminPanel').style.display='block';
 loadOrders();
 }
+
 }else{
 status.innerHTML='Not logged in';
 document.getElementById('auth').style.display='block';
+document.getElementById('adminPanel').style.display='none';
 }
 }
 
@@ -114,7 +123,11 @@ if(user){ currentUser=u; save(); updateUserUI(); }
 else alert('invalid');
 }
 
-function logout(){ currentUser=null; save(); location.reload(); }
+function logout(){
+currentUser = null;
+save();
+updateUserUI();
+}
 
 function addAdmin(){
 let email=document.getElementById('newAdmin').value;
@@ -128,18 +141,27 @@ alert('Admin added');
 function addProduct(){
 let name=document.getElementById('name').value;
 let price=document.getElementById('price').value;
-let image=document.getElementById('image').value;
 let desc=document.getElementById('desc').value;
-if(!name||!price)return alert('fill required');
-products.push({name,price,image,desc});
-save();
-display();
+let file=document.getElementById('imageFile').files[0];
+
+if(!name||!price) return alert('fill required');
+
+if(file){
+let reader = new FileReader();
+reader.onload = function(e){
+products.push({name,price,desc,image:e.target.result});
+save(); display(); showRecommendations();
+};
+reader.readAsDataURL(file);
+}else{
+products.push({name,price,desc,image:""});
+save(); display(); showRecommendations();
+}
 }
 
 function addToCart(i){
 cart.push(products[i]);
-save();
-updateCart();
+save(); updateCart();
 }
 
 function updateCart(){ document.getElementById('cartCount').innerText=cart.length; }
@@ -147,10 +169,8 @@ function updateCart(){ document.getElementById('cartCount').innerText=cart.lengt
 function placeOrder(){
 if(!currentUser) return alert('Login first');
 let location=prompt('Enter delivery location');
-let order={user:currentUser, items:cart, location, date:new Date().toLocaleString()};
-orders.push(order);
-save();
-alert('Order placed');
+orders.push({user:currentUser, items:cart, location, date:new Date().toLocaleString()});
+save(); alert('Order placed');
 cart=[]; save(); updateCart();
 }
 
@@ -191,8 +211,29 @@ c.appendChild(d);
 });
 }
 
+function showRecommendations(){
+let r=document.getElementById('recommendations');
+r.innerHTML='';
+if(products.length===0) return;
+
+let shuffled = [...products].sort(()=>0.5 - Math.random());
+let recs = shuffled.slice(0,3);
+
+recs.forEach(p=>{
+let d=document.createElement('div');
+d.className='card';
+d.innerHTML=`
+<img src="${p.image||'https://via.placeholder.com/200'}">
+<h3>${p.name}</h3>
+<b>KES ${p.price}</b>
+`;
+r.appendChild(d);
+});
+}
+
 updateCart();
 display();
+showRecommendations();
 updateUserUI();
 
 let btn=document.createElement('button');
