@@ -25,10 +25,20 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 
 <nav>
 <div>Cart: <span id="cartCount">0</span></div>
+<div id="userStatus"></div>
 <button onclick="toggleAdmin()">Admin</button>
 </nav>
 
 <div class="container">
+
+<!-- LOGIN -->
+<div id="auth">
+<h2>Login / Register</h2>
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+</div>
 
 <div id="adminPanel" style="display:none;">
 <h2>Add Product</h2>
@@ -47,11 +57,45 @@ button { padding:8px; background:#2e7d32; color:white; border:none; cursor:point
 <script>
 let products = JSON.parse(localStorage.getItem('products')) || [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let currentUser = localStorage.getItem('currentUser');
 
 function save(){
 localStorage.setItem('products', JSON.stringify(products));
 localStorage.setItem('cart', JSON.stringify(cart));
+localStorage.setItem('users', JSON.stringify(users));
+localStorage.setItem('currentUser', currentUser);
 }
+
+function updateUserUI(){
+let status=document.getElementById('userStatus');
+if(currentUser){
+status.innerHTML='Logged in: '+currentUser+' <button onclick="logout()">Logout</button>';
+document.getElementById('auth').style.display='none';
+}else{
+status.innerHTML='Not logged in';
+document.getElementById('auth').style.display='block';
+}
+}
+
+function register(){
+let u=document.getElementById('username').value;
+let p=document.getElementById('password').value;
+if(!u||!p) return alert('fill fields');
+users.push({u,p});
+alert('registered');
+save();
+}
+
+function login(){
+let u=document.getElementById('username').value;
+let p=document.getElementById('password').value;
+let user=users.find(x=>x.u===u && x.p===p);
+if(user){ currentUser=u; save(); updateUserUI(); }
+else alert('invalid');
+}
+
+function logout(){ currentUser=null; save(); updateUserUI(); }
 
 function toggleAdmin(){
 let p=document.getElementById('adminPanel');
@@ -75,14 +119,17 @@ save();
 updateCart();
 }
 
-function updateCart(){
-document.getElementById('cartCount').innerText=cart.length;
-}
+function updateCart(){ document.getElementById('cartCount').innerText=cart.length; }
 
-function orderWhatsApp(){
-let msg='Hello, I want to order:%0A';
-cart.forEach(p=>{msg+=p.name+' - KES '+p.price+'%0A'});
-window.open('https://wa.me/254792636137?text='+msg);
+function placeOrder(){
+if(!currentUser) return alert('Login first');
+let location=prompt('Enter delivery location');
+let order={user:currentUser, items:cart, location, date:new Date()};
+let orders=JSON.parse(localStorage.getItem('orders'))||[];
+orders.push(order);
+localStorage.setItem('orders', JSON.stringify(orders));
+alert('Order sent');
+cart=[]; save(); updateCart();
 }
 
 function display(){
@@ -104,17 +151,18 @@ c.appendChild(d);
 
 updateCart();
 display();
+updateUserUI();
 
-// simple floating order button
 let btn=document.createElement('button');
-btn.innerText='Order via WhatsApp';
+btn.innerText='Place Order';
 btn.style.position='fixed';
 btn.style.bottom='20px';
 btn.style.right='20px';
-btn.onclick=orderWhatsApp;
+btn.onclick=placeOrder;
 document.body.appendChild(btn);
 
 </script>
 
 </body>
 </html>
+
