@@ -78,5 +78,31 @@ button{background:#0f3d2e;color:white;border:none;padding:8px;border-radius:5px;
 
 </div>
 
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.createElement('canvas');
+document.querySelector('.main').prepend(ctx);
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+        datasets: [{
+            label: 'Sales (KES)',
+            data: [12000, 19000, 15000, 22000, 18000, 25000],
+            fill: true,
+            tension: 0.3
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        }
+    }
+});
+</script>
+
 </body>
 </html>
