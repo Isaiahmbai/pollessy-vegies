@@ -84,23 +84,43 @@ button{background:#0f3d2e;color:white;border:none;padding:8px;border-radius:5px;
 const ctx = document.createElement('canvas');
 document.querySelector('.main').prepend(ctx);
 
+function getOrders(){
+  return JSON.parse(localStorage.getItem('orders') || '[]');
+}
+
+function processMonthlySales(){
+  const orders = getOrders();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const totals = new Array(12).fill(0);
+
+  orders.forEach(o => {
+    const date = new Date(o.date);
+    const month = date.getMonth();
+    totals[month] += Number(o.total || 0);
+  });
+
+  return { months, totals };
+}
+
+const salesData = processMonthlySales();
+
 new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
-        datasets: [{
-            label: 'Sales (KES)',
-            data: [12000, 19000, 15000, 22000, 18000, 25000],
-            fill: true,
-            tension: 0.3
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true }
-        }
+  type: 'line',
+  data: {
+    labels: salesData.months,
+    datasets: [{
+      label: 'Sales (KES)',
+      data: salesData.totals,
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: true }
     }
+  }
 });
 </script>
 
