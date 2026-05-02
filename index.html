@@ -57,7 +57,7 @@ body { font-family: Arial; margin:0; background:#f4f6f9; }
   margin:10px 0; border-radius:10px;
 }
 .product img {
-  width:10%; height:120px;
+  width:50%; height:120px;
   object-fit:cover; border-radius:10px;
 }
 
@@ -83,7 +83,9 @@ button { padding:6px 10px; cursor:pointer; }
 <!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
-  <div class="tab" onclick="showTab('inventory')">Inventory</div>
+  <div class="tab" onclick="showTab('inventory_actions')">Inventory Actions</div>
+   <div class="tab" onclick="showTab('supplier management')">Supplier Management</div>
+   <div class="tab" onclick="showTab('accounts')">Accounts</div>
   <div class="tab" onclick="showTab('orders')">Orders</div>
 </div>
 
@@ -102,9 +104,9 @@ button { padding:6px 10px; cursor:pointer; }
 </div>
 
 <!-- INVENTORY -->
-<div id="inventory" class="section">
+<div id="inventory actions" class="section">
 
-<h2>Inventory</h2>
+<h2>Inventory Actions</h2>
 
 <input id="name" placeholder="Name">
 <input id="price" type="number" placeholder="Price">
@@ -112,6 +114,11 @@ button { padding:6px 10px; cursor:pointer; }
 <input id="img" type="file">
 
 <button onclick="addProduct()">Add Product</button>
+
+<div id="products"></div>
+
+</div>
+  <button onclick="inventory items()">Inventory Items</button>
 
 <div id="products"></div>
 
