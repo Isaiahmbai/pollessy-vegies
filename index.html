@@ -123,6 +123,26 @@ new Chart(ctx, {
   }
 });
 </script>
+  function loadOrders(){
+  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  let table = document.querySelector(".table");
+
+  let rows = `<tr><th>Customer</th><th>Total</th><th>Status</th></tr>`;
+
+  orders.forEach(o => {
+    rows += `
+      <tr>
+        <td>Customer</td>
+        <td>KES ${o.total}</td>
+        <td>${o.status}</td>
+      </tr>
+    `;
+  });
+
+  table.innerHTML = rows;
+}
+
+loadOrders();
   function placeOrder(){
   if(cart.length === 0){
     alert("Cart is empty");
