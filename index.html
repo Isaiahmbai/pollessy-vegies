@@ -3,189 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pollessy Admin</title>
-<style>
-body{margin:0;font-family:Arial;background:#f4f6f9;display:flex;}
-.sidebar{width:260px;background:linear-gradient(#0f3d2e,#166b4a);color:white;height:100vh;padding:20px;position:fixed;}
-.sidebar img{width:100%;border-radius:10px;margin-bottom:15px;}
-.sidebar a{display:block;color:white;padding:12px;text-decoration:none;border-radius:8px;margin:5px 0;}
-.sidebar a:hover{background:#1f7a56;}
-.main{margin-left:260px;width:calc(100% - 260px);padding:20px;}
-.topbar{display:flex;justify-content:space-between;align-items:center;background:white;padding:15px;border-radius:10px;}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:20px;}
-.card{background:white;padding:15px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} 
-.section{margin-top:20px;background:white;padding:15px;border-radius:10px;}
-.table{width:100%;border-collapse:collapse;}
-.table th,.table td{padding:10px;border-bottom:1px solid #ddd;text-align:left;}
-button{background:#0f3d2e;color:white;border:none;padding:8px;border-radius:5px;cursor:pointer;}
-</style>
-</head>
-<body>
-
-<div class="sidebar">
-<img src="data:image/png;base64,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">
-<h3>Pollessy Admin</h3>
-<a href="#">Dashboard</a>
-<a href="#">Orders</a>
-<a href="#">Products</a>
-<a href="#">Suppliers</a>
-<a href="#">Order Management</a>
-<a href="#">Invoicing & Billing</a>
-<a href="#">Accounting</a>
-</div>
-
-<div class="main">
-<div class="topbar">
-<h2>Welcome back, Admin 👋</h2>
-<button>+ Add Product</button>
-</div>
-
-<div class="cards">
-<div class="card">Total Sales<br><b>KES 125,650</b></div>
-<div class="card">Total Orders<br><b>48</b></div>
-<div class="card">Pending Orders<br><b>12</b></div>
-<div class="card">Customers<br><b>156</b></div>
-</div>
-
-<div class="section">
-<h3>Recent Orders</h3>
-<table class="table">
-<tr><th>Customer</th><th>Total</th><th>Status</th></tr>
-<tr><td>john@email.com</td><td>KES 2450</td><td>Pending</td></tr>
-<tr><td>mary@email.com</td><td>KES 1870</td><td>Received</td></tr>
-</table>
-</div>
-
-<div class="section">
-<h3>Suppliers</h3>
-<p>Green Farms Ltd - Tomatoes, Cabbage</p>
-<p>Fresh Harvest - Bananas, Avocados</p>
-</div>
-
-<div class="section">
-<h3>Order Management</h3>
-<p>Pending Orders: 12</p>
-<p>Received Orders: 18</p>
-</div>
-
-<div class="section">
-<h3>Accounting Summary</h3>
-<p>Total Sales: KES 125,650</p>
-<p>Expenses: KES 68,300</p>
-<p>Net Profit: KES 38,600</p>
-<button>Export Excel Report</button>
-</div>
-
-</div>
-
+<title>Pollessy Vegies & Fruits</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body { font-family: Arial; margin:0; background:#f4f6f9; }
+
+/* NAV */
+.nav {
+  background:#0f3d2e;
+  color:white;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+}
+.nav button {
+  background:white;
+  border:none;
+  padding:8px;
+  cursor:pointer;
+}
+
+/* PAGES */
+.page { display:none; padding:20px; }
+.active { display:block; }
+
+/* PRODUCTS */
+.product {
+  background:white;
+  padding:10px;
+  margin:10px;
+  border-radius:10px;
+}
+
+/* ADMIN */
+.cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+}
+.card {
+  background:white;
+  padding:15px;
+  border-radius:10px;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+td, th {
+  padding:10px;
+  border-bottom:1px solid #ddd;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <h3>Pollessy Vegies & Fruits</h3>
+  <div>
+    <button onclick="showPage('shop')">Shop</button>
+    <button onclick="showPage('admin')">Admin</button>
+  </div>
+</div>
+
+<!-- SHOP PAGE -->
+<div id="shop" class="page active">
+
+<h2>Products</h2>
+
+<div class="product">
+  Tomatoes - KES 100
+  <button onclick="addToCart('Tomatoes',100)">Add</button>
+</div>
+
+<div class="product">
+  Bananas - KES 80
+  <button onclick="addToCart('Bananas',80)">Add</button>
+</div>
+
+<div class="product">
+  Cabbage - KES 60
+  <button onclick="addToCart('Cabbage',60)">Add</button>
+</div>
+
+<h3>Cart</h3>
+<ul id="cartList"></ul>
+
+<button onclick="placeOrder()">Place Order</button>
+
+</div>
+
+<!-- ADMIN PAGE -->
+<div id="admin" class="page">
+
+<h2>Dashboard</h2>
+
+<div class="cards">
+  <div class="card">Total Sales<br><b id="sales"></b></div>
+  <div class="card">Orders<br><b id="ordersCount"></b></div>
+</div>
+
+<h3>Orders</h3>
+<table id="ordersTable"></table>
+
+<canvas id="chart"></canvas>
+
+</div>
+
 <script>
-const ctx = document.createElement('canvas');
-document.querySelector('.main').prepend(ctx);
 
-function getOrders(){
-  return JSON.parse(localStorage.getItem('orders') || '[]');
+/* PAGE SWITCH */
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+
+  if(page === 'admin') loadAdmin();
 }
 
-function processMonthlySales(){
-  const orders = getOrders();
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const totals = new Array(12).fill(0);
-
-  orders.forEach(o => {
-    const date = new Date(o.date);
-    const month = date.getMonth();
-    totals[month] += Number(o.total || 0);
-  });
-
-  return { months, totals };
-}
-
-const salesData = processMonthlySales();
-
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: salesData.months,
-    datasets: [{
-      label: 'Sales (KES)',
-      data: salesData.totals,
-      fill: true,
-      tension: 0.3
-    }]
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { display: true }
-    }
-  }
-});
-</script>
-  function loadOrders(){
-  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
-  let table = document.querySelector(".table");
-
-  let rows = `<tr><th>Customer</th><th>Total</th><th>Status</th></tr>`;
-
-  orders.forEach(o => {
-    rows += `
-      <tr>
-        <td>Customer</td>
-        <td>KES ${o.total}</td>
-        <td>${o.status}</td>
-      </tr>
-    `;
-  });
-
-  table.innerHTML = rows;
-}
-
-loadOrders();
-  function placeOrder(){
-  if(cart.length === 0){
-    alert("Cart is empty");
-    return;
-  }
-
-  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-
-  let order = {
-    items: cart,
-    total: total,
-    date: new Date().toISOString(),
-    status: "Pending"
-  };
-
-  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
-  orders.push(order);
-  localStorage.setItem('orders', JSON.stringify(orders));
-
-  cart = [];
-  alert("Order placed successfully!");
-  location.reload();
-}
+/* CART */
 let cart = [];
 
 function addToCart(name, price){
-  cart.push({
-    name: name,
-    price: price,
-    qty: 1
-  });
-  alert(name + " added to cart");
+  cart.push({name, price});
+  renderCart();
 }
-</body>
-</html>
-<button onclick="placeOrder()">Place Order</button>
-function placeOrder(){
-  if(cart.length === 0){
-    alert("Cart is empty");
-    return;
-  }
 
-  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+function renderCart(){
+  let list = document.getElementById('cartList');
+  list.innerHTML = "";
+  cart.forEach(i=>{
+    list.innerHTML += `<li>${i.name} - KES ${i.price}</li>`;
+  });
+}
+
+/* PLACE ORDER */
+function placeOrder(){
+  if(cart.length === 0) return alert("Cart empty");
+
+  let total = cart.reduce((s,i)=>s+i.price,0);
 
   let order = {
     items: cart,
@@ -199,6 +159,50 @@ function placeOrder(){
   localStorage.setItem('orders', JSON.stringify(orders));
 
   cart = [];
-  alert("Order placed successfully!");
-  location.reload();
+  renderCart();
+
+  alert("Order placed!");
 }
+
+/* ADMIN LOAD */
+function loadAdmin(){
+  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+  // totals
+  let totalSales = orders.reduce((s,o)=>s+o.total,0);
+  document.getElementById("sales").innerText = "KES " + totalSales;
+  document.getElementById("ordersCount").innerText = orders.length;
+
+  // table
+  let html = "<tr><th>Total</th><th>Status</th></tr>";
+  orders.forEach(o=>{
+    html += `<tr><td>KES ${o.total}</td><td>${o.status}</td></tr>`;
+  });
+  document.getElementById("ordersTable").innerHTML = html;
+
+  // chart
+  createChart(orders);
+}
+
+/* CHART */
+function createChart(orders){
+  let ctx = document.getElementById("chart");
+
+  let totals = orders.map(o=>o.total);
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: totals.map((_,i)=>"Order "+(i+1)),
+      datasets: [{
+        label: "Sales",
+        data: totals
+      }]
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>
