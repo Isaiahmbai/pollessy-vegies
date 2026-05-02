@@ -123,6 +123,29 @@ new Chart(ctx, {
   }
 });
 </script>
+  function placeOrder(){
+  if(cart.length === 0){
+    alert("Cart is empty");
+    return;
+  }
+
+  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  let order = {
+    items: cart,
+    total: total,
+    date: new Date().toISOString(),
+    status: "Pending"
+  };
+
+  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('orders', JSON.stringify(orders));
+
+  cart = [];
+  alert("Order placed successfully!");
+  location.reload();
+}
 let cart = [];
 
 function addToCart(name, price){
@@ -135,3 +158,27 @@ function addToCart(name, price){
 }
 </body>
 </html>
+<button onclick="placeOrder()">Place Order</button>
+function placeOrder(){
+  if(cart.length === 0){
+    alert("Cart is empty");
+    return;
+  }
+
+  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  let order = {
+    items: cart,
+    total: total,
+    date: new Date().toISOString(),
+    status: "Pending"
+  };
+
+  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('orders', JSON.stringify(orders));
+
+  cart = [];
+  alert("Order placed successfully!");
+  location.reload();
+}
