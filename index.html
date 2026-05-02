@@ -123,6 +123,15 @@ new Chart(ctx, {
   }
 });
 </script>
+let cart = [];
 
+function addToCart(name, price){
+  cart.push({
+    name: name,
+    price: price,
+    qty: 1
+  });
+  alert(name + " added to cart");
+}
 </body>
 </html>
