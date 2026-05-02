@@ -1,71 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pollessy Vegies & Fruits</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body { font-family: Arial; margin:0; background:#f4f6f9; }
+body { margin:0; font-family:Arial; background:#f5f6f8; }
 
 /* HEADER */
 .header {
-  display:flex; justify-content:space-between;
-  padding:15px 20px; background:#fff;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  display:flex;
+  justify-content:space-between;
+  padding:15px 40px;
+  background:white;
 }
-.logo { font-weight:bold; color:#2e7d32; }
+.logo img { height:50px; }
 
-/* ALERT */
-.alert {
-  background:#f8f3dc;
-  margin:20px; padding:15px;
-  border-radius:12px; border:1px solid #e4d27c;
+.btn {
+  background:#16a34a;
+  color:white;
+  padding:10px 20px;
+  border-radius:10px;
+  cursor:pointer;
 }
 
-/* TABS */
-.tabs {
-  display:flex; gap:10px; padding:0 20px;
+/* HERO */
+.hero {
+  display:flex;
+  padding:60px;
+  background:#e8f0eb;
 }
-.tab {
-  padding:10px 15px; background:#eaeaea;
-  border-radius:8px; cursor:pointer;
+.hero-text { flex:1; }
+.hero-text h1 { font-size:48px; }
+.hero-text p { color:#555; }
+
+.hero img { width:400px; }
+
+/* SHOP */
+.section { padding:40px; display:none; }
+.active { display:block; }
+
+.products {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
 }
-.tab.active { background:#fff; }
 
-/* SECTIONS */
-.section { display:none; padding:20px; }
-.section.active { display:block; }
+.product {
+  background:white;
+  padding:10px;
+  border-radius:10px;
+}
+.product img {
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
 
-/* CARDS */
+/* ADMIN */
 .cards {
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:15px;
 }
 .card {
+  background:white;
   padding:20px;
-  border-radius:15px;
-  background:#fff;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  border-radius:10px;
 }
 
-/* PRODUCT */
-.product {
-  background:#fff; padding:10px;
-  margin:10px 0; border-radius:10px;
-}
-.product img {
-  width:50%; height:120px;
-  object-fit:cover; border-radius:10px;
-}
-
-/* TABLE */
-table { width:100%; border-collapse:collapse; margin-top:15px; }
+table { width:100%; margin-top:20px; }
 td,th { padding:10px; border-bottom:1px solid #ddd; }
-
-button { padding:6px 10px; cursor:pointer; }
 </style>
 </head>
 
@@ -73,110 +79,68 @@ button { padding:6px 10px; cursor:pointer; }
 
 <!-- HEADER -->
 <div class="header">
-  <div class="logo">Pollessy Vegies & Fruits</div>
-  <div>Pollessy Admin<button>Sign Out</button></div>
+  <div class="logo">
+    <img src="data:image/png;base64,REPLACE_WITH_YOUR_LOGO_BASE64">
+  </div>
+  <div class="btn" onclick="show('shop')">Start Shopping</div>
 </div>
 
-<!-- ALERT -->
-<div class="alert" id="alertBox">Loading alerts...</div>
-
-<!-- TABS -->
-<div class="tabs">
-  <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
-  <div class="tab active" onclick="showTab('inventory_actions')">Inventory Actions</div>
-   <div class="tab active" onclick="showTab('supplier management')">Supplier Management</div>
-   <div class="tab active" onclick="showTab('accounts')">Accounts</div>
-  <div class="tab" onclick="showTab('orders')">Orders</div>
+<!-- HERO -->
+<div id="home" class="hero">
+  <div class="hero-text">
+    <h1>Fresh. Healthy. Delivered.</h1>
+    <p>Fresh vegetables and fruits delivered to your doorstep.</p>
+    <div class="btn" onclick="show('shop')">Shop Now</div>
+  </div>
+  <img src="data:image/png;base64,REPLACE_WITH_YOUR_LOGO_BASE64">
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="section active">
-<h2>Dashboard Overview</h2>
+<!-- SHOP -->
+<div id="shop" class="section">
+<h2>Shop Products</h2>
 
-  <!-- INVENTORY ACTIONS -->
-<div id="inventory actions" class="section active">
-<h2>Inventory Actions Overview</h2>
+<div class="products" id="productList"></div>
+
+<h3>Cart</h3>
+<ul id="cart"></ul>
+<button onclick="placeOrder()">Place Order</button>
+
+<button onclick="show('admin')">Go to Admin</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="section">
+<h2>Admin Dashboard</h2>
 
 <div class="cards">
-  <div class="card">Total Products<br><b id="dProducts"></b></div>
-  <div class="card">Total Orders<br><b id="dOrders"></b></div>
-  <div class="card">Total Sales<br><b id="dSales"></b></div>
-  <div class="card">Low Stock<br><b id="dLow"></b></div>
+  <div class="card">Products<br><b id="pCount"></b></div>
+  <div class="card">Orders<br><b id="oCount"></b></div>
+  <div class="card">Sales<br><b id="sales"></b></div>
+  <div class="card">Low Stock<br><b id="low"></b></div>
 </div>
+
+<h3>Orders</h3>
+<table id="ordersTable"></table>
 
 <canvas id="chart"></canvas>
 </div>
 
-<!-- INVENTORY -->
-<div id="inventory actions" class="section">
-
-<h2>Inventory Actions</h2>
-
-<input id="name" placeholder="Name">
-<input id="price" type="number" placeholder="Price">
-<input id="qty" type="number" placeholder="Quantity">
-<input id="img" type="file">
-
-<button onclick="addProduct()">Add Product</button>
-
-<div id="products"></div>
-
-</div>
-  <button onclick="inventory items()">Inventory Items</button>
-
-<div id="products"></div>
-
-</div>
-
-<!-- ORDERS -->
-<div id="orders" class="section">
-
-<h2>Order Management</h2>
-
-<h3>Pending Orders</h3>
-<table id="pendingTable"></table>
-
-<h3>Completed Orders</h3>
-<table id="completedTable"></table>
-
-</div>
-
 <script>
 
-/* NAVIGATION */
-function showTab(id){
+/* NAV */
+function show(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('home').style.display='none';
   document.getElementById(id).classList.add('active');
 }
 
 /* STORAGE */
-const get = key => JSON.parse(localStorage.getItem(key)||'[]');
-const set = (key,val)=>localStorage.setItem(key,JSON.stringify(val));
+const get = k => JSON.parse(localStorage.getItem(k)||'[]');
+const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
-/* PRODUCTS */
-function addProduct(){
-  let reader = new FileReader();
-  let file = img.files[0];
-
-  reader.onload = function(){
-    let products = get('products');
-
-    products.push({
-      name:name.value,
-      price:price.value,
-      qty:qty.value,
-      image:reader.result
-    });
-
-    set('products',products);
-    loadProducts();
-  };
-
-  if(file) reader.readAsDataURL(file);
-}
-
+/* LOAD PRODUCTS */
 function loadProducts(){
-  let list = document.getElementById("products");
+  let list = document.getElementById("productList");
   let products = get('products');
 
   list.innerHTML="";
@@ -184,103 +148,67 @@ function loadProducts(){
     list.innerHTML += `
       <div class="product">
         <img src="${p.image}">
-        <b>${p.name}</b><br>
-        KES ${p.price}<br>
-        Stock: ${p.qty}
-        <button onclick="addToCart('${p.name}',${p.price})">Order</button>
+        <h4>${p.name}</h4>
+        KES ${p.price}
+        <button onclick="addToCart('${p.name}',${p.price})">Add</button>
       </div>
     `;
   });
-
-  updateDashboard();
 }
 
-/* CART + ORDER */
+/* CART */
 let cart=[];
-
-function addToCart(name,price){
-  cart.push({name,price});
-  alert("Added");
+function addToCart(n,p){
+  cart.push({n,p});
+  renderCart();
 }
 
-function placeOrder(){
-  let total = cart.reduce((s,i)=>s+i.price,0);
-
-  let orders = get('orders');
-  orders.push({
-    items:cart,
-    total,
-    status:"Pending",
-    date:new Date().toISOString()
+function renderCart(){
+  cartList = document.getElementById("cart");
+  cartList.innerHTML="";
+  cart.forEach(i=>{
+    cartList.innerHTML += `<li>${i.n} - ${i.p}</li>`;
   });
+}
 
+/* ORDER */
+function placeOrder(){
+  let total = cart.reduce((s,i)=>s+i.p,0);
+
+  let orders = get('orders');
+  orders.push({items:cart,total,status:"Pending"});
   set('orders',orders);
+
   cart=[];
-  loadOrders();
+  renderCart();
+  alert("Order placed");
 }
 
-/* ORDERS */
-function loadOrders(){
-  let orders = get('orders');
-
-  let pending = orders.filter(o=>o.status==="Pending");
-  let done = orders.filter(o=>o.status==="Done");
-
-  document.getElementById("pendingTable").innerHTML =
-    "<tr><th>Total</th><th>Action</th></tr>" +
-    pending.map((o,i)=>`
-      <tr>
-        <td>KES ${o.total}</td>
-        <td><button onclick="completeOrder(${i})">Mark Done</button></td>
-      </tr>`).join("");
-
-  document.getElementById("completedTable").innerHTML =
-    "<tr><th>Total</th></tr>" +
-    done.map(o=>`<tr><td>KES ${o.total}</td></tr>`).join("");
-
-  updateDashboard();
-}
-
-function completeOrder(index){
-  let orders = get('orders');
-  orders[index].status="Done";
-  set('orders',orders);
-  loadOrders();
-}
-
-/* DASHBOARD */
-function updateDashboard(){
+/* ADMIN */
+function loadAdmin(){
   let p = get('products');
   let o = get('orders');
 
-  dProducts.innerText = p.length;
-  dOrders.innerText = o.length;
-  dSales.innerText = "KES "+o.reduce((s,x)=>s+x.total,0);
+  pCount.innerText = p.length;
+  oCount.innerText = o.length;
+  sales.innerText = "KES "+o.reduce((s,x)=>s+x.total,0);
+  low.innerText = p.filter(x=>x.qty<5).length;
 
-  let low = p.filter(x=>x.qty<5).length;
-  dLow.innerText = low;
+  ordersTable.innerHTML =
+    "<tr><th>Total</th><th>Status</th></tr>" +
+    o.map(x=>`<tr><td>${x.total}</td><td>${x.status}</td></tr>`).join("");
 
-  alertBox.innerText = low+" product(s) below par level";
-
-  drawChart(o);
-}
-
-/* CHART */
-function drawChart(o){
-  let ctx=document.getElementById("chart");
-
-  new Chart(ctx,{
+  new Chart(chart,{
     type:'bar',
     data:{
       labels:o.map((_,i)=>"Order "+(i+1)),
-      datasets:[{label:"Sales",data:o.map(x=>x.total)}]
+      datasets:[{data:o.map(x=>x.total)}]
     }
   });
 }
 
-/* INIT */
 loadProducts();
-loadOrders();
+loadAdmin();
 
 </script>
 
