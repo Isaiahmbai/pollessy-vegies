@@ -132,3 +132,59 @@ localStorage.setItem('orders', JSON.stringify([
   { total: 3200, date: "2026-02-20" },
   { total: 1500, date: "2026-03-10" }
 ]));
+let cart = [];
+
+function addToCart(name, price){
+  cart.push({
+    name: name,
+    price: price,
+    qty: 1
+  });
+  alert(name + " added to cart");
+}
+<button onclick="addToCart('Tomatoes', 100)">Add to Cart</button>
+<button onclick="addToCart('Bananas', 80)">Add to Cart</button>
+function placeOrder(){
+  if(cart.length === 0){
+    alert("Cart is empty");
+    return;
+  }
+
+  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  let order = {
+    items: cart,
+    total: total,
+    date: new Date().toISOString(),
+    status: "Pending"
+  };
+
+  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('orders', JSON.stringify(orders));
+
+  cart = [];
+  alert("Order placed successfully!");
+  location.reload();
+}
+<button onclick="placeOrder()">Place Order</button>
+function loadOrders(){
+  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  let table = document.querySelector(".table");
+
+  let rows = `<tr><th>Customer</th><th>Total</th><th>Status</th></tr>`;
+
+  orders.forEach(o => {
+    rows += `
+      <tr>
+        <td>Customer</td>
+        <td>KES ${o.total}</td>
+        <td>${o.status}</td>
+      </tr>
+    `;
+  });
+
+  table.innerHTML = rows;
+}
+
+loadOrders();
