@@ -74,7 +74,7 @@ button { padding:6px 10px; cursor:pointer; }
 <!-- HEADER -->
 <div class="header">
   <div class="logo">Pollessy Vegies & Fruits</div>
-  <div>Isaiah Mbai <button>Sign Out</button></div>
+  <div>Pollessy Admin<button>Sign Out</button></div>
 </div>
 
 <!-- ALERT -->
@@ -83,15 +83,19 @@ button { padding:6px 10px; cursor:pointer; }
 <!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
-  <div class="tab" onclick="showTab('inventory_actions')">Inventory Actions</div>
-   <div class="tab" onclick="showTab('supplier management')">Supplier Management</div>
-   <div class="tab" onclick="showTab('accounts')">Accounts</div>
+  <div class="tab active" onclick="showTab('inventory_actions')">Inventory Actions</div>
+   <div class="tab active" onclick="showTab('supplier management')">Supplier Management</div>
+   <div class="tab active" onclick="showTab('accounts')">Accounts</div>
   <div class="tab" onclick="showTab('orders')">Orders</div>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="section active">
 <h2>Dashboard Overview</h2>
+
+  <!-- INVENTORY ACTIONS -->
+<div id="inventory actions" class="section active">
+<h2>Inventory Actions Overview</h2>
 
 <div class="cards">
   <div class="card">Total Products<br><b id="dProducts"></b></div>
